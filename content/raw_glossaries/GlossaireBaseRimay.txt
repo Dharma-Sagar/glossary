@@ -1,4 +1,4 @@
-﻿﻿sgrub pa bka' brgyad|huit préceptes transmis (Nyingma)
+﻿sgrub pa bka' brgyad|huit préceptes transmis (Nyingma)
 'dus ma byas|non composé, inconditionné
 'dzam bu gling|Jambouling, Notre monde,
  'dzam gling,  dzam gling|Jambouling, Notre monde,
@@ -1108,7 +1108,7 @@ dbu rgyan|Odiyâna, Orgyen, "Ornement d'O"
 'od zer|Rayons de lumière, Rais de lumière,
 'og 'gyu|Sous jacent, Qui se meut en dessous
 'og min|Akaniskha, Qui n'est en dessous (de rien) Le plus haut, Le suprême, L'ultime,
-o+m swasti|"Qu'advienne l'excellente félicité"
+oM swasti|"Qu'advienne l'excellente félicité"
 'os pa|Convenable, Adéquat, Digne, Approprié,
 paN chen|Mahapandita Grand Erudidt
 pha rgyud|Tantra père
