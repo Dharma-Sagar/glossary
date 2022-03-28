@@ -14,16 +14,36 @@ sorter = TibetanSort()
 def export_docx(json_file, out_path):
     def add_entries(current_entry):
         word, entries = data[str(current_entry)][0], data[str(current_entry)][1]
-        doc.add_heading(f'{current_entry} {word}', 2)
-        for name, entry in entries:
-            doc.add_heading(name, 4)
-            for n, defnt in enumerate(entry):
-                doc.add_paragraph(f'- {defnt}')
-
         url = 'https://dictionary.christian-steinert.de/#%7B%22activeTerm%22%3A%22{word}%22%2C%22lang%22%3A%22tib%22%2C%22inputLang%22%3A%22tib%22%2C%22currentListTerm%22%3A%22{word}%22%2C%22forceLeftSideVisible%22%3Afalse%2C%22offset%22%3A0%7D'
         wylie = converter.toWylie(word)
-        p = doc.add_paragraph()
-        add_hyperlink(p, url.format(word=wylie), 'Christian Steinert', '#0000EE', True)
+
+        doc.add_heading(f'{current_entry} {word}', 2)
+        doc.add_heading('Termes utilisés', 4)
+        doc.add_heading('Définition', 4)
+        doc.add_heading('Notes', 4)
+        doc.add_heading('À consulter', 4)
+        par = doc.add_paragraph()
+        add_hyperlink(par, url.format(word=wylie), 'Christian Steinert', '#0000EE', True)
+        par.add_run().add_break()
+
+        e_num = 1
+        for name, entry in entries:
+            if e_num > 1:
+                name = f'\n{name}'
+            run = par.add_run(name + ' ')
+            run.font.bold = True
+            run.font.italic = True
+
+            d_num = 1
+            for n, defnt in enumerate(entry):
+                if d_num > 1:
+                    defnt = f'\n⁃ {defnt}'
+                else:
+                    defnt = f'⁃ {defnt}'
+                par.add_run(defnt)
+
+                d_num += 1
+            e_num += 1
 
     data = json.loads(Path(json_file).read_text())
     config = parse_config(data)

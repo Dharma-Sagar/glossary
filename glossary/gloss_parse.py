@@ -1,9 +1,10 @@
 import json
+import re
 from pathlib import Path
 from csv import DictReader
 
 import pyewts
-from botok import TokChunks
+from botok import TokChunks, Text
 from tibetan_sort import TibetanSort
 
 converter = pyewts.pyewts()
