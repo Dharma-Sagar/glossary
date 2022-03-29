@@ -1,10 +1,9 @@
 import json
-import re
 from pathlib import Path
 from csv import DictReader
 
 import pyewts
-from botok import TokChunks, Text
+from botok import TokChunks
 from tibetan_sort import TibetanSort
 
 converter = pyewts.pyewts()
@@ -65,7 +64,7 @@ def parse_csv(in_file, joined):
                 entry.append(f'Sens racine: {", ".join(roots)}')
             if alter:
                 entry.append(f'Alternatives: {alter}')
-            entry = '\n'.join(entry)
+            entry = '\n '.join(entry)
 
             if word not in joined:
                 joined[word] = {}

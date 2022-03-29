@@ -4,6 +4,11 @@ from pathlib import Path
 
 from botok import Text
 from docx import Document
+from pyewts import pyewts
+
+from .format_unicode import bold, ital
+
+converter = pyewts()
 
 
 def generate_csv(in_path, out_file):
@@ -20,16 +25,27 @@ def parsed_2_rows(parsed):
     for lemma, fields in parsed.items():
         cur_row = [''] * 5
         num, word = lemma
-        fields['def'][0] = f'{num}. {fields["def"][0]}'
+        # term column: lemma
         cur_row[0] = word
-        cur_row[2] = ' '.join(fields['def'])
-        defn = []
-        for section in ['words', 'notes']:
-            sec = ' '.join(fields[section]).replace(',', '-')
-            if sec:
-                defn.append(f'{section}: {sec}')
 
-        cur_row[4] = ' '.join(defn)
+        # pos column: ignored
+
+        # comment column: words, entry number, definition and notes
+        defn = []
+        words = ' '.join([f for f in fields['words'] if f]).replace(',', ' -')
+        defn.append(ital(words))
+        defn.append(f'{num}. ')
+        for section in ['def', 'notes']:
+            if ''.join(fields[section]):
+                sec = ' '.join([f for f in fields[section] if f]).replace(',', '-')
+                defn.append(f'{bold(section)}: {sec}')
+        defn = ' '.join(defn)
+        cur_row[2] = defn
+
+        # fr column: url
+        if len(fields['url']) < 500:
+            cur_row[4] = fields['url']
+
         rows.append(cur_row)
     return rows
 
@@ -52,6 +68,7 @@ def parse_docx(in_path):
     files = sorted(list(Path(in_path).glob('*.docx')))
     gloss = {}
     for file in files:
+        print(file.name)
         doc = Document(file)
         cur_entry = None
         num = 0
@@ -67,6 +84,12 @@ def parse_docx(in_path):
                 cur_entry = tuple([e_num, word])
                 if cur_entry[0] and cur_entry not in gloss:
                     gloss[cur_entry] = {}
+                    # add christian steinert url
+                    url = 'https://dictionary.christian-steinert.de/#%7B%22activeTerm%22%3A%22{word}%22%2C%22lang%22%3A%22tib%22%2C%22inputLang%22%3A%22tib%22%2C%22currentListTerm%22%3A%22{word}%22%2C%22forceLeftSideVisible%22%3Afalse%2C%22offset%22%3A0%7D'
+                    wylie = converter.toWylie(cur_entry[1])
+                    wylie = wylie.replace('_', '').replace(' ', '%20')
+                    url = url.format(word=wylie)
+                    gloss[cur_entry]['url'] = url
             elif par.style.name == 'Heading 4':
                 if par.text == 'Termes utilisés':
                     num = add_section(num, 'words')
@@ -86,4 +109,3 @@ def segment_in_words(string):
     tokenized = re.sub('([^།་_]) ([^_།་])', '\g<1>␣\g<2>', tokenized)  # affixed particles
     tokenized = re.sub('_', ' ', tokenized)  # spaces
     return tokenized
-
